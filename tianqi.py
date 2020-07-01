@@ -22,8 +22,14 @@ def bad_wea(text):
     #print('none')
     return False
 
+def get_day(text):
+    pattern = r'.*?[日]'
+    r = re.search(pattern, text, flags=0)
+    #print(r.group())
+    return r .group()
+
 def today_bad_wea():
-    cont = ''
+    title, cont = '', ''
 
     url = 'https://tianqiapi.com/api'    
     params = {
@@ -34,18 +40,23 @@ def today_bad_wea():
 
     resp = requests.get(url, params=params)
     jd = json.loads(resp.text)
+
+    day = get_day(jd['data'][0]['day'])
+    title = '{} {} {}'.format(day, jd['city'], jd['data'][0]['wea'])
+    cont += '当前{}，最低{}，最高{}'.format(jd['data'][0]['tem'], jd['data'][0]['tem2'], jd['data'][0]['tem1']) + '\r\n\r\n'
+
     for w in jd['data'][0]['hours']:
         if bad_wea(w['wea']):
             #print('{}，{}，{}'.format(w['day'], w['wea'], w['tem']))
-            cont += '{}，{}，{}'.format(w['day'], w['wea'], w['tem']) + '\r\n'
+            cont += '{}，{}，{}'.format(w['day'], w['wea'], w['tem']) + '\r\n\r\n'
     if cont:
-        return cont
+        return title, cont
     return False
 
 def main():
-    cont = today_bad_wea()
+    title, cont = today_bad_wea()
     if cont:
-        sj = ServerJ(title='天气预警', cont=cont , token=r_conf('sj'), debug=False)
+        sj = ServerJ(title=title, cont=cont , token=r_conf('sj'), debug=False)
         sj.run()
 
 if __name__ == '__main__':

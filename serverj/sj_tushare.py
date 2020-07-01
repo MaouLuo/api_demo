@@ -9,7 +9,8 @@ import datetime
 
 # 读取配置文件函数
 # os.path.dirname(os.path.realpath(__file__)))获取当前路径，os.getcwd()获取有异常，仅能拿到1级目录
-def r_conf(item, path=os.path.dirname(os.path.realpath(__file__))+'\\config.ini', name='token'):
+# def r_conf(item, path=os.path.dirname(os.path.realpath(__file__))+'\\config.ini', name='token'):
+def r_conf(item, path='D:\\code'+'\\config.ini', name='token'):
     #print('{} {} {}'.format(item, path, name))
     config = configparser.ConfigParser()
     config.read(path, encoding='utf-8')
@@ -123,7 +124,7 @@ def main():
     tstarget = Tushare()
     cont = tstarget.run()
     
-    sj = ServerJ('今日关注', cont)
+    sj = ServerJ('关注股价', cont, debug=False)
     sj.run()
     
 
