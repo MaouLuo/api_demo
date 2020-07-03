@@ -26,7 +26,9 @@ def general():
 
 def main():
     #general()
-    df = pro.daily(trade_date='20180810')
+    #df = pro.daily(trade_date='20180810')
+    df = pro.trade_cal(exchange='', start_date='20180101', end_date='20181231')
+
     print(df)
 
 if __name__ == '__main__':
