@@ -4,7 +4,7 @@ import sqlite3
 # 连接到SQLite数据库
 # 数据库文件是test.db
 # 如果文件不存在，会自动在当前目录创建:
-conn = sqlite3.connect('D:\\code\\api_demo\\tushare\\users.db')
+conn = sqlite3.connect('D:\\code\\api_demo\\tushare\\date.db')
 # 创建一个Cursor:
 cursor = conn.cursor()
 
