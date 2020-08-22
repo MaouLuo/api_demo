@@ -2,36 +2,22 @@
 import tushare as ts
 #import requests
 import time
-import configparser 
-import os
-import datetime
 import sqlite3
-from sqlalchemy import create_engine 
+import tools
+import trade_date
 
-engine_ts = create_engine('mysql://root:abc123@127.0.0.1:3306/shares?charset=utf8&use_unicode=1')
+debug_path = 'D:\\code\\api_demo\\tushare\\ts_test.db'
+release_path = 'D:\\code\\api_demo\\tushare\\shares.db'
+path = debug_path
 
-
-# 读取配置文件函数
-# os.path.dirname(os.path.realpath(__file__)))获取当前路径，os.getcwd()获取有异常，仅能拿到1级目录
-# def r_conf(item, path=os.path.dirname(os.path.realpath(__file__))+'\\config.ini', name='token'):
-def r_conf(item, path='D:\\code'+'\\config.ini', name='token'):
-    #print('{} {} {}'.format(item, path, name))
-    config = configparser.ConfigParser()
-    config.read(path, encoding='utf-8')
-    cont = config.get(item, name)
-    #print(cont)
-    return cont
-
-# 获取日期
-def get_date():
-    cur_time = datetime.datetime.now()
-    date = cur_time.strftime("%Y%m%d")
-    #print(date-1)
-    return date
+def get_open_date(table_name, filed_name, value):
+    cal_db = trade_date.shares_db(path)
+    res = trade_date.query(cal_db, table_name, filed_name, value)
+    return res
 
 class Shares():
     def __init__(self):
-        self.token = r_conf('ts')
+        self.token = tools.r_conf('ts')
         self.pro = ts.pro_api()
         
     # 获取交易日历，默认ssh深交所，默认显示交易日
@@ -41,14 +27,21 @@ class Shares():
         #print(df)
         return df
 
-def write_data(df):
-    res = df.to_sql('cal', engine_ts, index=False, if_exists='replace', chunksize=5000)
-    print(res)
+    def all_daily(self, date):
+        db = trade_date.shares_db(path)
+        #res = get_open_date('cal', 'is_open', '1')        
+        for d in date:
+            df = self.pro.daily(trade_date=d[1])
+            db.insert_data('daily', df)
+        
 
 def main():
     share = Shares()
-    df = share.get_cal('20100101', '20200111')
-    write_data(df)
+    open_date = get_open_date('cal', 'is_open', '1')
+    share.all_daily(open_date)
+    #df = share.get_cal('20100101', '20200111')
+    #share.daily('20200821')
+    #print(df)
 
 if __name__ == '__main__':
     main()
