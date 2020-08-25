@@ -93,7 +93,10 @@ def insert(table_name):
         db.commit()
         #writer.save()
         #writer.close()
-        
+
+def query_all(db, table_name, filed_name):
+    #db = shares_db(path)
+    db.query_all(table_name)
     
 def query(db, table_name, filed_name, value):    
     
