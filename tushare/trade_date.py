@@ -7,8 +7,8 @@ import pandas as pd
 from time import *
 
 debug_path = 'D:\\code\\api_demo\\tushare\\ts_test.db'
-release_path = 'D:\\code\\api_demo\\tushare\\shares.db'
-path = debug_path
+release_path = 'D:\\code\\api_demo\\tushare\\stock.db'
+path = release_path
 
 class shares_db():    
     def __init__(self, path):
@@ -67,6 +67,11 @@ class Shares():
         #print(df)
         return df
 
+    def get_list(self):
+        df = self.pro.stock_basic(exchange='', list_status='L')
+        #print(shares_list)
+        return df
+
 def insert(table_name):
     #writer = pd.ExcelWriter('./date_text.xlsx')
     share = Shares()
@@ -94,9 +99,27 @@ def insert(table_name):
         #writer.save()
         #writer.close()
 
-def query_all(db, table_name, filed_name):
+def insert_list(table_name):
+    #writer = pd.ExcelWriter('./date_text.xlsx')
+    share = Shares()
+    db = shares_db(path)
+      
+    try:
+        shares_list = share.get_list()
+        db.insert_data(table_name, shares_list)
+    except Exception as e:
+        print('bad list insert {}'.format(e))
+    else:
+        print('good list insert')
+    finally:
+        db.commit()
+        #writer.save()
+        #writer.close()
+
+def query_all(db, table_name):
     #db = shares_db(path)
     db.query_all(table_name)
+    db.commit()
     
 def query(db, table_name, filed_name, value):    
     
@@ -122,11 +145,15 @@ def create():
 
 def main():
     #create() 已无用
+    ''' 获取交易日历 
     insert('cal')
     db = shares_db(path)
     res = query(db, 'cal', 'is_open', '1')
     open_date = [d[1] for d in res]
     print(open_date)
+    '''
+    insert_list('stock_list')
+
 
 if __name__ == "__main__":
     main()

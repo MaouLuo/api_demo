@@ -7,7 +7,7 @@ import tools
 import trade_date
 
 debug_path = 'D:\\code\\api_demo\\tushare\\ts_test.db'
-release_path = 'D:\\code\\api_demo\\tushare\\shares.db'
+release_path = 'D:\\code\\api_demo\\tushare\\stock.db'
 path = debug_path
 
 def get_open_date(table_name, filed_name, value):
@@ -23,6 +23,8 @@ def query(table_name):
     res = trade_date.query(cal_db, table_name, filed_name, value)
     print(res)
 
+def query_all(db, table_name):
+    trade_date.query_all(db, table_name)
 
 class Shares():
     def __init__(self):
@@ -49,11 +51,11 @@ def main():
     share = Shares()
     #open_date = get_open_date('cal', 'is_open', '1')
     open_date = ['20200817']#, '20200818', '20200819', '20200820', '20200821']
-    share.all_daily(open_date)
+    #share.all_daily(open_date)
     #df = share.get_cal('20100101', '20200111')
     #share.daily('20200821')
     #print(df)
-    query()
+    query_all(trade_date.shares_db(path), 'daily')
 
 if __name__ == '__main__':
     main()
